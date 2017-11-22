@@ -1,0 +1,45 @@
+apt-get remove apache2
+apt-get autoremove
+apt-get install nginx
+apt-get install mysql-server 
+apt-get install php
+apt-get install php-fpm
+apt-get install php-gd
+apt-get install php-mysql 
+apt-get install aptitude
+aptitude update &&  aptitude install imagemagick
+# for video support:
+apt-get install ffmpeg libav-tools mediainfo libfaad2 libvorbis0a libvorbisenc2 libvorbisfile3 libxvidcore4 libx264-148 libvpx41
+
+mysql
+MariaDB [(none)]> CREATE USER 'piwigo'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON * . * TO 'piwigo'@'localhost';
+FLUSH PRIVILEGES;
+CREATE DATABASE piwigodb1;
+
+vim /etc/nginx/sites-enabled/default
+server {
+    listen 80 default_server;
+    root /var/www/data;
+    index index.php index.html index.htm;
+    server_name _;
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        # With php-fpm (or other unix sockets):
+        fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+    }
+}
+service nginx reload
+
+# Useful configurations in Piwigo
+# activate "LocalFiles Editor" plugin
+# edit "Local Config"
+$conf['guest_access'] = false;
+$conf['newcat_default_status'] = 'private';
+$conf['upload_form_all_types'] = true;
+# see the following link for more:
+# https://github.com/xbgmsharp/piwigo-videojs/wiki/How-to-add-videos
+
