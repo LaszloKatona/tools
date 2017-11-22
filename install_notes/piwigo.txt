@@ -1,3 +1,5 @@
+# Install Piwigo on Debian 9
+
 apt-get remove apache2
 apt-get autoremove
 apt-get install nginx
@@ -33,6 +35,9 @@ server {
     }
 }
 service nginx reload
+
+# Run piwigo-netinstall.php
+# http://piwigo.org/basics/installation_netinstall
 
 # Useful configurations in Piwigo
 # activate "LocalFiles Editor" plugin
