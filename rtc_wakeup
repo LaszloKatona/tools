@@ -1,0 +1,27 @@
+#!/bin/bash
+exec > >(logger -t $0 -p local0.info ) 2> >(logger -t $0 -p local0.error)
+set -x
+if [ $# -ne 1 ]; then
+    echo 1>&2 "$0: missing time argument (e.g. 7:00)"
+    exit 2
+fi
+WAKE_UP_TIME=$1
+NOW=$(date "+%s")
+WAKE_UP_TOMORROW=$(date "+%s" -d "tomorrow $WAKE_UP_TIME")
+WAKE_UP_TODAY=$(date "+%s" -d "$WAKE_UP_TIME")
+# determine whether today or tomorrow should be waked up
+if [ $NOW -lt $WAKE_UP_TODAY ]; then
+    WAKE_UP_DATE=$WAKE_UP_TODAY
+else
+    WAKE_UP_DATE=$WAKE_UP_TOMORROW
+fi
+# do not wake up on weekends
+# if [ $(date "+%u" -d @$WAKE_UP_DATE) -ge 6 ]
+# then
+#     WAKE_UP_DATE=$(date "+%s" -d "next monday $WAKE_UP_TIME")
+# fi
+# set RTC wake alarm
+echo 0 > /sys/class/rtc/rtc0/wakealarm
+echo $WAKE_UP_DATE > /sys/class/rtc/rtc0/wakealarm
+echo "RTC wake up time is set to $(date -d @$WAKE_UP_DATE)"
+
